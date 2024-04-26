@@ -57,16 +57,24 @@
                     localStorage.removeItem('rememberedUser');
                 }
             });
-            
+    
             // Handle login button click
-            var rectangle1 = $("#rectangle1");
-            if(rectangle1.length) {
-                rectangle1.click(function (e) {
-                    // Redirect to home.html
+            $("#rectangle1").click(function(e) {
+                e.preventDefault(); // Prevent default button click behavior
+    
+                var userId = $('.user-id').val().trim();
+                var password = $('.password').val().trim();
+    
+                // Validate User ID and Password fields
+                if (userId === '' || password === '') {
+                    alert('Please enter your User ID and Password.');
+                } else {
+                    // Redirect to home.html if both fields are filled
                     window.location.href = 'home.html';
-                });
-            }
+                }
+            });
         });
     </script>
+    
 </body>
 </html>
