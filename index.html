@@ -26,28 +26,59 @@
 				</div>
 
 				<div class="form-field d-flex align-items-center">  
-					<input class="shadow mb-2 bg-white" type="email" placeholder="User ID"/>
+					<input class="shadow mb-2 bg-white user-id" type="text" placeholder="User ID" value="B22EC3005"/>
 				</div>
 				<div class="form-field d-flex align-items-center">
-					<input class="shadow mb-2 bg-white" type="password" placeholder="Password"/>
+					<input class="shadow mb-2 bg-white password" type="password" placeholder="Password" value="010115121267"/>
 				</div>
-
+				
+				<div class="remember-me">
+					<input type="checkbox" id="rememberMeCheckbox">
+					<label for="rememberMeCheckbox">Remember me</label>
+				</div>
+				<button class="btn mt-5 mb-3" id="login-btn" type="submit">Login</button>
+				
 				<div class="forgot-password">
 					<a class="small text-muted" href="#!">Forgot password?</a>
 				</div>
-
-				<button class="btn mt-5" type="submit">Login</button>
 
 			</form>
 	</div> 	
   	
   	<script>
-    		var rectangle1 = document.getElementById("rectangle1");
-    		if(rectangle1) {
-      			rectangle1.addEventListener("click", function (e) {
-        				// Add your code here
-      			});
-    		}		
-	</script>
+		 $(document).ready(function() {
+            // Check if there is a remembered user
+            var rememberedUser = localStorage.getItem('rememberedUser');
+            if (rememberedUser) {
+                $('.user-id').val(rememberedUser);
+                $('#rememberMeCheckbox').prop('checked', true);
+            }
+            
+            // Remember the user if checkbox is checked
+            $('#rememberMeCheckbox').change(function() {
+                if ($(this).is(':checked')) {
+                    localStorage.setItem('rememberedUser', $('.user-id').val());
+                } else {
+                    localStorage.removeItem('rememberedUser');
+                }
+            });
+
+			// Handle login button click 
+    		  $("#login-btn").click(function(e) {
+                e.preventDefault(); // Prevent default button click behavior
+    
+                var userId = $('.user-id').val().trim();
+                var password = $('.password').val().trim();
+    
+                // Validate User ID and Password fields
+                if (userId === '' || password === '') {
+                    alert('Please enter your User ID and Password.');
+                } else {
+                    // Redirect to home.html if both fields are filled
+                    window.location.href = 'home.html';
+                }
+            });
+		});
+    </script> 
 </body>
 </html>
