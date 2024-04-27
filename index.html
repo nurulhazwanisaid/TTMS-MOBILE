@@ -6,39 +6,40 @@
   	
   	<link rel="stylesheet"  href="./index.css" />
   	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" />
-  	
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
   	
   	
 </head>
 <body>
-  	
-  	<div class="login-page">
-    		<img class="awan-bangunan-fc-1-icon" alt="" src="img/awan-bangunan-FC.jpg">
-    		
-    		<b class="e-learning-fc">E-Learning FC</b>
-    		<div class="login-page-child">
-    		</div>
-    		<div class="forgot-password">Forgot Password?</div>
-    		<div class="remember-me">Remember me</div>
-    		<div class="login-page-item" id="rectangle1">
-    		</div>
-    		<b class="login">Login</b>
-    		<div class="login-page-inner">
-    		</div>
-    		<div class="password">Password</div>
-    		<img class="fc-utm-1-icon" alt="" src="img/FC-utm.png">
-    		
-    		<b class="welcome">Welcome!</b>
-    		<div class="sign-in-to">Sign in to continue</div>
-    		<div class="rectangle-div">
-    		</div>
-    		<div class="user-id">User ID</div>
-    		<div class="login-page-child1">
-    		</div>
-  	</div>
-  	
-  	
-  	
+	<div class="wrapper">
+		<div class="container d-flex justify-content-center align-items-center">
+			<img class="header" alt="" src="img/awan-bangunan-FC.jpg">
+			<b class="title">E-Learning FC</b>
+		</div>
+		<form class="p-5 mt-5 ">
+			<div class="container d-flex justify-content-center align-items-center">
+				<img class="utm-logo" alt="" src="img/FC-utm.png">
+			</div>
+				<div class="text-center mt-4 mb-5 name">
+					<h3><b>Welcome!</b></h3>
+					<h5>Sign in to continue</h5>
+				</div>
+
+				<div class="form-field d-flex align-items-center">  
+					<input class="shadow mb-2 bg-white" type="email" placeholder="User ID"/>
+				</div>
+				<div class="form-field d-flex align-items-center">
+					<input class="shadow mb-2 bg-white" type="password" placeholder="Password"/>
+				</div>
+
+				<div class="forgot-password">
+					<a class="small text-muted" href="#!">Forgot password?</a>
+				</div>
+
+				<button class="btn mt-5" type="submit">Login</button>
+
+			</form>
+	</div> 	
   	
   	<script>
     		var rectangle1 = document.getElementById("rectangle1");
@@ -46,5 +47,7 @@
       			rectangle1.addEventListener("click", function (e) {
         				// Add your code here
       			});
-    		}</script></body>
+    		}		
+	</script>
+</body>
 </html>

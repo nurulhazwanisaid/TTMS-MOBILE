@@ -1,172 +1,117 @@
 /* ---------------------- Login Page ----------------------------------- */
-.awan-bangunan-fc-1-icon {
-    position: absolute;
-    top: -44px;
-    left: 0px;
-    width: 375px;
-    height: 242px;
-    object-fit: cover;
+/* Reseting */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
 }
-.e-learning-fc {
+
+body {
+    background-color:#ecf0f3;
+}
+
+.header {
     position: absolute;
-    top: 100px;
-    left: 199px;
+    top: -1vh;
+    width: 100%;
+    height: 30vh;
+    object-fit: cover;
+    z-index: -5;
+}
+
+.title {
+    position: absolute;
+    top: 20%;
+    left: 85%;
+    width: 100%;
     font-size: 24px;
     display: flex;
     align-items: center;
-    width: 176px;
-    height: 32px;
+    color: #fff;
 }
-.login-page-child {
+
+.utm-logo {
     position: absolute;
-    top: 139px;
-    left: 0px;
-    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.25);
-    border-radius: 34px 34px 0px 0px;
-    background-color: #fff;
-    width: 375px;
-    height: 528px;
+    top: 30vh;
+    align-items: center;
+    width: 350px;
+    margin: auto;
 }
+
+.utm-logo img {
+    width: 100%;
+    height: 15px;
+    object-fit: cover;  
+}
+
+.wrapper {
+    max-width: 550px;
+    min-height: 500px;
+    margin: 150px auto;
+    padding: 40px 30px 30px 30px;
+    background-color: #fff;
+    border-radius: 25px;
+    box-shadow: 13px 13px 20px #e3e3e3, -13px -13px 20px #e3e3e3;
+}
+
+.wrapper .name {
+    font-weight: 600;
+    font-size: 1.4rem;
+    letter-spacing: 1.3px;
+    padding-left: 10px;
+    color: #555;
+}
+
 .forgot-password {
     position: absolute;
-    top: 470px;
-    left: 238px;
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 600;
     color: #35556a;
     display: flex;
-    align-items: center;
-    width: 110px;
+    text-align: right;
+    width: 150px;
     height: 32px;
-}
-.remember-me {
-    position: absolute;
-    top: 470px;
-    left: 64px;
-    font-size: 12px;
-    color: #9f9f9f;
-    display: flex;
-    align-items: center;
-    width: 110px;
-    height: 32px;
-}
-.login-page-item {
-    position: absolute;
-    top: 526px;
-    left: 113px;
-    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.25);
-    border-radius: 20px;
-    background-color: #37566b;
-    width: 153px;
-    height: 41px;
-    cursor: pointer;
-}
-.login {
-    position: absolute;
-    top: 531px;
-    left: 134px;
-    display: flex;
-    text-align: center;
-    align-items: center;
-    justify-content: center;
-    width: 110px;
-    height: 32px;
-}
-.login-page-inner {
-    position: absolute;
-    top: 429px;
-    left: 45px;
-    box-shadow: 0px 2px 16px rgba(0, 0, 0, 0.25);
-    border-radius: 20px;
-    background-color: #fff;
-    width: 291px;
-    height: 41px;
-}
-.password {
-    position: absolute;
-    top: 434px;
-    left: 61px;
-    color: rgba(159, 159, 159, 0.64);
-    display: flex;
-    align-items: center;
-    width: 110px;
-    height: 32px;
-}
-.fc-utm-1-icon {
-    position: absolute;
-    top: 173px;
-    left: 45px;
-    width: 284px;
-    height: 51px;
-    object-fit: cover;
-}
-.welcome {
-    position: absolute;
-    top: 254px;
-    left: 108px;
-    font-size: 24px;
-    display: flex;
-    color: #000;
-    text-align: center;
-    align-items: center;
-    justify-content: center;
-    width: 158px;
-    height: 47px;
-}
-.sign-in-to {
-    position: absolute;
-    top: 291px;
-    left: 61px;
-    font-size: 20px;
-    color: #9f9f9f;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 252px;
-    height: 42px;
-}
-.rectangle-div {
-    position: absolute;
-    top: 363px;
-    left: 45px;
-    box-shadow: 0px 2px 16px rgba(0, 0, 0, 0.25);
-    border-radius: 20px;
-    background-color: #fff;
-    width: 291px;
-    height: 41px;
-}
-.user-id {
-    position: absolute;
-    top: 367px;
-    left: 61px;
-    color: rgba(159, 159, 159, 0.64);
-    display: flex;
-    align-items: center;
-    width: 110px;
-    height: 32px;
-}
-.login-page-child1 {
-    position: absolute;
-    top: 479px;
-    left: 45px;
-    box-shadow: 0px 1px 16px rgba(0, 0, 0, 0.25);
-    background-color: #fff;
-    border: 1px solid #d9d9d9;
-    box-sizing: border-box;
-    width: 15px;
-    height: 13px;
-}
-.login-page {
-    width: 100%;
-    position: relative;
-    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.25);
-    background-color: #fff;
-    height: 667px;
-    overflow: hidden;
-    text-align: left;
-    font-size: 16px;
-    color: #fff;
-    font-family: Inter;
 }
 
+.form-field input {
+    position: relative;
+    display: inline-block;
+    font-size: 1.1rem;
+    box-sizing: border-box;
+    background: none;
+    width: 100%;
+    border: 1px solid rgba(159, 159, 159, 0.64);
+    outline: none;
+    padding: 10px 15px 10px 15px;
+    border-radius: 25px;
+}
+
+.wrapper .form-field {
+    margin-bottom: 20px;
+}
+
+.wrapper .btn {
+    box-shadow: none;
+    width: 100%;
+    height: 40px;
+    background-color: #37566B;
+    color: #fff;
+    border-radius: 25px;
+    box-shadow: 3px 3px 3px #b1b1b1,
+        -3px -3px 3px #fff;
+    letter-spacing: 1.3px;
+}
+
+.wrapper .btn:hover {
+    background-color: #039BE5;
+}
+
+
+
+@media(max-width: 380px) {
+    .wrapper {
+        margin: 30px 20px;
+        padding: 40px 15px 15px 15px;
+    }
+}
