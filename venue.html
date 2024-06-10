@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TTMS Mobile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3pro.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-teal.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">      
+</head>
+<body style="max-width:600px">
+    <br>
+    <div id="app">
+        <input class="w3-input w3-border" type="text" placeholder="Search by name, code or shortform" v-model="searchQuery" @input="filterVenues">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Venue Name</th>
+                    <th>Shortform</th>
+                    <th>Venue Code</th>
+                    <th>Capacity</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="venue in filteredVenues" :key="venue.kod_ruang">
+                    <td>{{ venue.nama_ruang }}</td>
+                    <td>{{ venue.nama_ruang_singkatan }}</td>
+                    <td>{{ venue.kod_ruang }}</td>
+                    <td>{{ venue.kapasiti }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="TTMS_Lib.js"></script>
+    <script>
+        // logout and back to login page if session invalid or 
+        // session time out
+        checkSession();
+
+        var appStorage = JSON.parse(sessionStorage.getItem("web_fc_utm_my_ttms"));
+        console.log(appStorage.user_auth);
+        console.log(appStorage.data.venue);
+
+        if (appStorage.data.venue == null) {
+            console.log('Get venues from service');
+            var entity = { 'entity': 'ruang', 'kod_fakulti': 'fsksm' };
+
+            var entityGetData = new URLSearchParams(entity).toString();
+
+            console.log(entityGetData);
+            $.ajax({
+                type: "GET",
+                url: ajaxURL,
+                data: entityGetData,
+                success: function (response, status, xhr) {
+                    console.log(response);
+                    var venues = JSON.parse(response);
+                    appStorage.data.venue = venues;
+
+                    sessionStorage.setItem("web_fc_utm_my_ttms", JSON.stringify(appStorage));
+                    
+                    runVueApp();
+                },
+                error: function (xhr, status, error) {
+                    alert("AJAX error!");
+                },
+                async: true,
+            });
+
+        } else {
+            runVueApp();
+        }
+
+        function runVueApp() {
+            var app = Vue.createApp({
+                data() {
+                    return {
+                        venues: appStorage.data.venue,
+                        searchQuery: '',
+                        filteredVenues: appStorage.data.venue
+                    }
+                },
+                computed: {
+                    uniqueVenues() {
+                        const venues = {};
+                        this.venues.forEach(location => {
+                            if ((location.nama_ruang.startsWith('') || location.nama_ruang_singkatan.startsWith('') || location.kod_ruang.startsWith(''))  && !venues[location.nama_ruang] && !venues[location.nama_ruang_singkatan] && !venues[location.kod_ruang]) {
+                                venues[location.nama_ruang] = {
+                                    nama_ruang: location.nama_ruang,
+                                    nama_ruang_singkatan: location.nama_ruang_singkatan,
+                                    kod_ruang: location.kod_ruang,
+                                    kapasiti: location.kapasiti
+                                };
+                            }
+                        });
+                        return Object.values(venues);
+                    }
+                },
+                methods: {
+                    filterVenues() {
+                        const searchQueryLower = this.searchQuery.toLowerCase();
+                        this.filteredVenues = this.uniqueVenues.filter(venue =>
+                            venue.nama_ruang.toLowerCase().includes(searchQueryLower) ||
+                            venue.nama_ruang_singkatan.toLowerCase().includes(searchQueryLower) ||
+                            venue.kod_ruang.toLowerCase().includes(searchQueryLower)
+                        );
+                    }
+                },
+                mounted() {
+                    this.filterVenues(); // Initialize filteredVenues with all venues
+                }
+            });
+            app.mount('#app');
+        }     
+    </script>
+</body>
+</html>

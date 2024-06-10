@@ -1,92 +1,114 @@
 <!DOCTYPE html>
 <html>
-<head>
-  	<meta charset="utf-8">
-  	<meta name="viewport" content="initial-scale=1, width=device-width">
-  	
-  	<link rel="stylesheet"  href="./home.css" />
-  	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" />
-  	
-  	
-  	
-</head>
-<body>
-  	
-  	<div class="home-page">
-    		<div class="home-page-child">
-    		</div>
-    		<div class="home-page-item">
-    		</div>
-    		<div class="lorem-ipsum-dolor-container">
-      			<ul class="lorem-ipsum-dolor-sit-amet">
-        				<li>Lorem ipsum dolor sit amet</li>
-      			</ul>
-    		</div>
-    		<div class="lorem-ipsum-dolor-container1">
-      			<ul class="lorem-ipsum-dolor-sit-amet">
-        				<li>Lorem ipsum dolor sit amet</li>
-      			</ul>
-    		</div>
-    		<div class="lorem-ipsum-dolor-container2">
-      			<ul class="lorem-ipsum-dolor-sit-amet">
-        				<li>Lorem ipsum dolor sit amet</li>
-      			</ul>
-    		</div>
-    		<div class="lorem-ipsum-dolor-container3">
-      			<ul class="lorem-ipsum-dolor-sit-amet">
-        				<li>Lorem ipsum dolor sit amet</li>
-      			</ul>
-    		</div>
-    		<div class="about">About</div>
-    		<div class="home-page-inner">
-    		</div>
-    		<div class="lorem-ipsum-dolor">Lorem ipsum dolor sit amet, consectetur adipiscingusto massa </div>
-    		<div class="announcement">Announcement</div>
-    		<img class="vector-icon" alt="" src="icon/Menu.svg" id="vectorIcon">
-    		
-    		<div class="ellipse-div" id="ellipse">
-    		</div>
-    		<img class="vector-icon1" alt="" src="icon/Profile.svg">
-    		
-    		<div class="e-learning-fc">E-Learning FC</div>
-    		<div class="faculty-of-computing">Faculty of Computing</div>
-    		<img class="utm-logo-1-icon" alt="" src="img/UTM-LOGO 1.png">
-    		
-    		<div class="rectangle-div">
-    		</div>
-    		<div class="lorem-ipsum-dolor1">Lorem ipsum dolor sit amet, consectetur adipiscingusto massa </div>
-    		<div class="lorem-ipsum-dolor-container4">
-      			<ul class="lorem-ipsum-dolor-sit-amet">
-        				<li>Lorem ipsum dolor sit amet</li>
-      			</ul>
-    		</div>
-    		<div class="lorem-ipsum-dolor-container5">
-      			<ul class="lorem-ipsum-dolor-sit-amet">
-        				<li>Lorem ipsum dolor sit amet</li>
-      			</ul>
-    		</div>
-    		<div class="lorem-ipsum-dolor-container6">
-      			<ul class="lorem-ipsum-dolor-sit-amet">
-        				<li>Lorem ipsum dolor sit amet</li>
-      			</ul>
-    		</div>
-  	</div>
-  	
-  	
-  	
-  	
-  	<script>
-    		var vectorIcon = document.getElementById("vectorIcon");
-    		if(vectorIcon) {
-      			vectorIcon.addEventListener("click", function (e) {
-        				// Add your code here
-      			});
-    		}
-    		
-    		var ellipse = document.getElementById("ellipse");
-    		if(ellipse) {
-      			ellipse.addEventListener("click", function (e) {
-        				// Add your code here
-      			});
-    		}</script></body>
-</html>
+<title>TTMS Mobile</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3pro.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-teal.css">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+<body style="max-width:600px">
+
+    <nav class="w3-sidebar w3-bar-block w3-card" id="mySidebar">
+        <div class="w3-container w3-theme-d2 w3-blue">
+            <span onclick="closeSidebar()" class="w3-button w3-display-topright w3-large">X</span>
+            <br>&nbsp;<br>
+        </div>
+        <a class="w3-bar-item w3-button" href="javascript: profile();">My Profile</a>
+        <a class="w3-bar-item w3-button" href="javascript: course();">Courses</a>
+        <a class="w3-bar-item w3-button" href="javascript: timetable();">Timetable</a>
+        <a class="w3-bar-item w3-button" href="javascript: lecturer();">Lecturers</a>
+        <a class="w3-bar-item w3-button" href="javascript: student();">Students</a>
+        <a class="w3-bar-item w3-button" href="javascript: venue();">Venues</a>
+        <a class="w3-bar-item w3-button" href="javascript: logout();">Logout</a>
+    </nav>
+
+    <header class="w3-bar w3-card w3-theme w3-blue">
+        <button class="w3-bar-item w3-button w3-xxxlarge w3-hover-theme" onclick="openSidebar()">&#9776;</button>
+        <h1 class="w3-bar-item">TTMS FC</h1>
+    </header>
+
+    <div class="w3-container" id="main-container">
+    </div>
+
+    <footer class="w3-container w3-theme w3-margin-top w3-blue w3-center">
+        <h5>Copyright 2024, Faculty of Computing, UTM</h5>
+    </footer>
+</body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="TTMS_Lib.js"></script>
+<script>
+    // logout and back to login page if session invalid or 
+    // session time out
+    checkSession();
+
+    closeSidebar();
+    
+    function openSidebar() {
+        document.getElementById("mySidebar").style.display = "block";
+    }
+
+    function closeSidebar() {
+        document.getElementById("mySidebar").style.display = "none";
+    }
+
+    console.log(sessionStorage.getItem("web_fc_utm_my_ttms"));
+
+
+
+    // only reach here after pass both the checkSession() and 
+    // checkTimeOut() functions
+    console.log('Load profile page');
+    $('#main-container').load('profile.html');
+
+    function logout() {
+        sessionStorage.removeItem("web_fc_utm_my_ttms");
+        closeSidebar();
+        window.location.href = "login.html";
+    }
+
+    // All load page functions below require CORS disabled.
+    // Press Win + r keys and run the followings:
+    // chrome.exe --user-data-dir="C:/Chrome dev session" --disable-web-security
+    function profile() {
+        closeSidebar();
+        console.log('Load profile page');
+        $('#main-container').load('profile.html');
+    }
+
+    function course() {
+            closeSidebar();
+            console.log('Load course page');
+            $('#main-container').load('course.html');
+            if (selectedCourse) {
+                $('#main-container').load('class_location.html');
+            } else {
+                $('#main-container').load('course.html');
+            }
+        }
+
+    function timetable() {
+        closeSidebar();
+        console.log('Load timetable page');
+        $('#main-container').load('timetable.html');
+    }
+
+    function lecturer() {
+        closeSidebar();
+        console.log('Load lecturer page');
+        $('#main-container').load('lecturer.html');
+    }
+
+    function student() {
+        closeSidebar();
+        console.log('Load student page');
+        $('#main-container').load('student.html');
+    }
+
+    function venue() {
+        closeSidebar();
+        console.log('Load venue page');
+        $('#main-container').load('venue.html');
+    }
+</script>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FC Timetable</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .hover-pointer {
+            cursor: pointer;
+        }
+        .back-button {
+            margin-bottom: 15px;
+        }
+        .timetable td, .timetable th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        .timetable th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: center;
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body style="max-width: 800px; margin: auto;">
+
+    <div class="w3-container w3-blue">
+        <h2>FC Timetable</h2>
+    </div>
+
+    <div id="app" class="w3-container">
+        <div v-if="selectedSubject === null && selectedSection === null">
+            <input class="w3-input w3-border" type="text" placeholder="Search by Subject Code" v-model="searchQuery" @input="filterSubjects">
+            <table class="w3-table w3-striped w3-bordered">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Subject Code</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(subject, index) in filteredSubjects" :key="index" @click="selectSubject(subject.kod_subjek)" class="hover-pointer">
+                        <td>{{ index + 1 }}</td>
+                        <td>{{ subject.kod_subjek }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div v-else-if="selectedSection === null">
+            <button class="w3-button w3-blue back-button" @click="deselectSubject">Back</button>
+            <h3>Sections for {{ selectedSubject }}</h3>
+            <ul class="w3-ul">
+                <li v-for="(section, index) in sections" :key="index" @click="selectSection(section)" class="hover-pointer">
+                    Section {{ section.seksyen }}
+                </li>
+            </ul>
+        </div>
+        <div v-else>
+            <button class="w3-button w3-blue back-button" @click="deselectSection">Back</button>
+            <h3>Timetable for Section {{ selectedSection.seksyen }}</h3>
+            <table class="w3-table w3-bordered timetable">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Sun</th>
+                        <th>Mon</th>
+                        <th>Tue</th>
+                        <th>Wed</th>
+                        <th>Thu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="time in timeSlots" :key="time">
+                        <td>{{ convertTime(time) }}</td>
+                        <td v-for="day in days" :key="day">
+                            <span v-for="classTime in filterClassTimes(day, time)" :key="classTime">
+                                {{ selectedSubject }}-{{ selectedSection.seksyen }} 
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="TTMS_Lib.js"></script>
+    <script>
+        checkSession();
+
+        var appStorage = JSON.parse(sessionStorage.getItem("web_fc_utm_my_ttms"));
+        console.log(appStorage.user_auth);
+
+        if (appStorage.data.jadual_waktu == null) {
+            var entity = { 'entity': 'jadual_subjek', 
+                           'session_id': appStorage.user_auth.session_id,
+                           'sesi': appStorage.session_semester.sesi, 
+                           'semester': appStorage.session_semester.semester };
+            var entityGetData = new URLSearchParams(entity).toString();
+
+            $.ajax({
+                type: "GET",
+                url: ajaxURL,
+                data: entityGetData,
+                success: function (response, status, xhr) {
+                    var jadual_waktu = JSON.parse(response);
+                    console.log("Timetable Data:", jadual_waktu);
+                    appStorage.data.jadual_waktu = jadual_waktu;
+                    sessionStorage.setItem("web_fc_utm_my_ttms", JSON.stringify(appStorage));
+                    runVueApp();
+                },
+                error: function (xhr, status, error) {
+                    alert("AJAX error!");
+                },
+                async: true,
+            });
+        } else {
+            runVueApp();
+        }
+
+        function runVueApp() {
+            const app = Vue.createApp({
+                data() {
+                    return {
+                        jadual_waktu: appStorage.data.jadual_waktu,
+                        selectedSubject: null,
+                        selectedSection: null,
+                        searchQuery: '',
+                        filteredSubjects: []
+                    };
+                },
+                computed: {
+                    uniqueSubjects() {
+                        const subjects = {};
+                        this.jadual_waktu.forEach(exam => {
+                            if ((exam.kod_subjek.startsWith('SEC') || exam.kod_subjek.startsWith('U')) && !subjects[exam.kod_subjek]) {
+                                subjects[exam.kod_subjek] = {
+                                    kod_subjek: exam.kod_subjek,
+                                    nama_subjek: exam.nama_subjek
+                                };
+                            }
+                        });
+                        return Object.values(subjects);
+                    },
+                    sections() {
+                        if (this.selectedSubject) {
+                            const sections = {};
+                            this.jadual_waktu.forEach(exam => {
+                                if (exam.kod_subjek === this.selectedSubject) {
+                                    if (!sections[exam.seksyen]) {
+                                        sections[exam.seksyen] = {
+                                            seksyen: exam.seksyen,
+                                            classTimes: []
+                                        };
+                                    }
+                                    sections[exam.seksyen].classTimes.push({
+                                        hari: exam.hari,
+                                        masa: exam.masa
+                                    });
+                                }
+                            });
+                            return Object.values(sections);
+                        }
+                        return [];
+                    },
+                    days() {
+                        return [1, 2, 3, 4, 5];
+                    },
+                    timeSlots() {
+                        return [2, 3, 4, 5, 6, 8, 9, 10, 11];
+                    }
+                },
+                methods: {
+                    filterSubjects() {
+                        this.filteredSubjects = this.uniqueSubjects.filter(subject =>
+                            subject.kod_subjek.toLowerCase().includes(this.searchQuery.toLowerCase())
+                        );
+                    },
+                    selectSubject(subjectCode) {
+                        this.selectedSubject = subjectCode;
+                        this.selectedSection = null;
+                    },
+                    deselectSubject() {
+                        this.selectedSubject = null;
+                    },
+                    selectSection(section) {
+                        this.selectedSection = section;
+                    },
+                    deselectSection() {
+                        this.selectedSection = null;
+                    },
+                    filterClassTimes(day, time) {
+                        return this.selectedSection.classTimes.filter(classTime => classTime.hari == day && classTime.masa == time);
+                    },
+                    convertDay(day) {
+                        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
+                        return days[day - 1] || '';
+                    },
+                    convertTime(time) {
+                        const times = {
+                            2: '8:00 - 8:50',
+                            3: '9:00 - 9:50',
+                            4: '10:00 - 10:50',
+                            5: '11:00 - 11:50',
+                            6: '12:00 - 12:50',
+                            8: '2:00 - 2:50',
+                            9: '3:00 - 3:50',
+                            10: '4:00 - 4:50',
+                            11: '5:00 - 5:50'
+                        };
+                        return times[time] || '';
+                    },
+                },
+                mounted() {
+                    this.filterSubjects(); // Initialize filteredSubjects with all subjects
+                }
+            });
+            app.mount('#app');
+        }
+    </script>
+
+</body>
+</html>

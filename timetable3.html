@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Timetable</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f7f7f7;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+    <h1>Student Timetable</h1>
+    <table id="timetable">
+        <thead>
+            <tr>
+                <th>Subject Code</th>
+                <th>Subject Name</th>
+                <th>Day</th>
+                <th>Time</th>
+                <th>Venue</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Timetable rows will be inserted here -->
+        </tbody>
+    </table>
+
+    <script>
+        async function fetchTimetable() {
+            const subjectsUrl = 'http://web.fc.utm.my/ttms/web_man_webservice_json.cgi?entity=pelajar_subjek&no_matrik=A16CS4016';
+            const subjectsResponse = await fetch(subjectsUrl);
+            const subjects = await subjectsResponse.json();
+
+            const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const timeSlots = {
+                1: '8am - 9am',
+                2: '9am - 10am',
+                3: '10am - 11am',
+                4: '11am - 12pm',
+                5: '12pm - 1pm',
+                6: '1pm - 2pm',
+                7: '2pm - 3pm',
+                8: '3pm - 4pm',
+                9: '4pm - 5pm',
+                10: '5pm - 6pm'
+            };
+
+            for (const subject of subjects) {
+                const { kod_subjek, nama_subjek, sesi, semester, seksyen } = subject;
+                const timetableUrl = `http://web.fc.utm.my/ttms/web_man_webservice_json.cgi?entity=jadual_subjek&sesi=${sesi}&semester=${semester}&kod_subjek=${kod_subjek}&seksyen=${seksyen}`;
+                const timetableResponse = await fetch(timetableUrl);
+                const timetable = await timetableResponse.json();
+
+                timetable.forEach(entry => {
+                    const day = daysOfWeek[entry.hari];
+                    const time = timeSlots[entry.masa];
+                    const venue = entry.ruang.nama_ruang_singkatan;
+
+                    addRowToTimetable(kod_subjek, nama_subjek, day, time, venue);
+                });
+            }
+        }
+
+        function addRowToTimetable(subjectCode, subjectName, day, time, venue) {
+            const tableBody = document.querySelector('#timetable tbody');
+            const row = document.createElement('tr');
+
+            const subjectCodeCell = document.createElement('td');
+            subjectCodeCell.textContent = subjectCode;
+            row.appendChild(subjectCodeCell);
+
+            const subjectNameCell = document.createElement('td');
+            subjectNameCell.textContent = subjectName;
+            row.appendChild(subjectNameCell);
+
+            const dayCell = document.createElement('td');
+            dayCell.textContent = day;
+            row.appendChild(dayCell);
+
+            const timeCell = document.createElement('td');
+            timeCell.textContent = time;
+            row.appendChild(timeCell);
+
+            const venueCell = document.createElement('td');
+            venueCell.textContent = venue;
+            row.appendChild(venueCell);
+
+            tableBody.appendChild(row);
+        }
+
+        // Fetch and display the timetable on page load
+        fetchTimetable();
+    </script>
+</body>
+</html>

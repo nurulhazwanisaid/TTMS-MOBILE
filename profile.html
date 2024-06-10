@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<title>TTMS Mobile</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3pro.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-teal.css">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+<body style="max-width:600px">
+    <div class="w3-cell w3-container">
+        <h3>Name:</h3>
+        <p id="username">???</p>
+        <h3>Matric No.:</h3>
+        <p id="matricno">???</p>
+        <h3 id="sessem">Session:</h3>
+        <p id="session">???</p>
+        <h3 id="sessem">Semester:</h3>
+        <p id="sem">???</p>
+        <h3>Start Date:</h3>
+        <p id="startdate">???</p>
+        <h3>End Date:</h3>
+        <p id="enddate">???</p>
+    </div>
+</body>
+
+</html>
+<script src="TTMS_Lib.js"></script>
+<script>
+    // logout and back to login page if session invalid or 
+    // session time out
+    checkSession();
+
+    var appStorage = JSON.parse(sessionStorage.getItem("web_fc_utm_my_ttms"));
+    console.log(appStorage.user_auth.full_name);
+
+    $("p#username").text(appStorage.user_auth.full_name);
+    $("p#matricno").text(appStorage.user_auth.login_name);
+
+    var session_semester = {'entity': 'sesisemester'};
+    var semGetData = new URLSearchParams(session_semester).toString();
+    console.log(semGetData);
+
+    if (appStorage && appStorage.session_semester) {
+        $("p#session").text(appStorage.session_semester.sesi);
+        $("p#sem").text(appStorage.session_semester.semester);
+        $("p#startdate").text(appStorage.session_semester.tarikh_mula);
+        $("p#enddate").text(appStorage.session_semester.tarikh_tamat);
+    } else {
+        console.error("Session semester data is missing!");
+    }
+
+    $.ajax({
+                type: "GET",
+                url: ajaxURL,
+                data: semGetData,
+                success: function (response, status, xhr) {
+                    console.log(response);
+                    var sessem = JSON.parse(response);
+                    appStorage.session_semester = sessem[0];
+
+                    sessionStorage.setItem("web_fc_utm_my_ttms", JSON.stringify(appStorage));
+
+                    if (appStorage.session_semester) {
+                        $("p#session").text(appStorage.session_semester.sesi);
+                        $("p#sem").text(appStorage.session_semester.semester);
+                        $("p#startdate").text(appStorage.session_semester.tarikh_mula);
+                        $("p#enddate").text(appStorage.session_semester.tarikh_tamat);
+                    } else {
+                        console.error("Updated session semester data is missing!");
+                    }
+            
+                },
+                error: function (xhr, status, error) {
+                    alert("AJAX error!");
+                },
+                async: true,
+            });
+
+
+</script>

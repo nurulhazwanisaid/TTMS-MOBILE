@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lecturer List</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body style="max-width: 600px; margin: auto;">
+
+    <div class="w3-container w3-blue">
+        <h2>Lecturer List</h2>
+    </div>
+
+    <div class="w3-container w3-margin-top">
+        <input class="w3-input w3-border" type="text" placeholder="Search by Name" id="searchInput" oninput="filterLecturers()">
+    </div>
+
+    <div id="app" class="w3-container">
+        <table class="w3-table w3-striped w3-bordered">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(lecturer, index) in filteredLecturers" :key="index" @click="showLecturerDetails(lecturer)">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ lecturer.nama }}</td>
+                    <td>{{ lecturer.jabatan }}</td>
+                    <td>{{ lecturer.email }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="TTMS_Lib.js"></script>
+    <script>
+        // logout and back to login page if session invalid or session timeout
+        checkSession();
+
+        var appStorage = JSON.parse(sessionStorage.getItem("web_fc_utm_my_ttms"));
+
+        function getLecturers() {
+            return new Promise((resolve, reject) => {
+                var lecturer = {
+                    'entity': 'pensyarah',
+                    'session_id': appStorage.user_auth.session_id,
+                    'sesi': appStorage.session_semester.sesi,
+                    'semester': appStorage.session_semester.semester
+                };
+                
+                var lectGetData = new URLSearchParams(lecturer).toString();
+                console.log("Request Data:", lectGetData);
+
+                $.ajax({
+                    type: "GET",
+                    url: ajaxURL,
+                    data: lectGetData,
+                    success: function(response, status, xhr) {
+                        console.log("Raw Response:", response);
+
+                        try {
+                            var lecturers = JSON.parse(response);
+                            appStorage.lecturer = lecturers;
+                            sessionStorage.setItem("web_fc_utm_my_ttms", JSON.stringify(appStorage));
+                            resolve(lecturers);
+                        } catch (e) {
+                            console.error("Error parsing JSON:", e);
+                            console.error("Response Text:", response);
+                            reject("Error parsing JSON: " + e.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("AJAX error:", error);
+                        reject("AJAX error: " + error);
+                    }
+                });
+            });
+        }
+
+        function runVueApp(lecturers) {
+            const app = Vue.createApp({
+                data() {
+                    return {
+                        lecturers: lecturers,
+                        filteredLecturers: lecturers
+                    };
+                },
+                methods: {
+                    showLecturerDetails(lecturer) {
+                        console.log(lecturer);
+                    },
+                    filterLecturers() {
+                        var input = document.getElementById("searchInput").value.toLowerCase();
+                        this.filteredLecturers = this.lecturers.filter(lecturer => lecturer.nama.toLowerCase().includes(input));
+                    }
+                }
+            });
+            app.mount('#app');
+        }
+
+        // Main logic to fetch data and run the Vue app
+        if (!appStorage.lecturer) {
+            console.log('Get lecturers from service');
+            getLecturers()
+                .then(lecturers => {
+                    console.log("Lecturers:", lecturers);
+                    runVueApp(lecturers);
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert(error);
+                });
+        } else {
+            console.log('Using cached lecturers data');
+            runVueApp(appStorage.lecturer);
+        }
+
+        // Ensure filterLecturers function is available globally
+        function filterLecturers() {
+            app.__vue__.filterLecturers();
+        }
+    </script>
+
+</body>
+</html>
