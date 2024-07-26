@@ -5,33 +5,79 @@
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3pro.css">
 <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-teal.css">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
+<link rel="stylesheet" href="home.css">
+<link rel="stylesheet" href="global.css">
+<style>
+    
+    </style>
+<body>
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
 
-<body style="max-width:600px">
-
-    <nav class="w3-sidebar w3-bar-block w3-card" id="mySidebar">
-        <div class="w3-container w3-theme-d2 w3-blue">
+    <nav class="sidebar bar-block w3-card" id="mySidebar">
+        <div class="w3-container blue">
             <span onclick="closeSidebar()" class="w3-button w3-display-topright w3-large">X</span>
             <br>&nbsp;<br>
         </div>
-        <a class="w3-bar-item w3-button" href="javascript: profile();">My Profile</a>
-        <a class="w3-bar-item w3-button" href="javascript: course();">Courses</a>
-        <a class="w3-bar-item w3-button" href="javascript: timetable();">Timetable</a>
-        <a class="w3-bar-item w3-button" href="javascript: lecturer();">Lecturers</a>
-        <a class="w3-bar-item w3-button" href="javascript: student();">Students</a>
-        <a class="w3-bar-item w3-button" href="javascript: venue();">Venues</a>
-        <a class="w3-bar-item w3-button" href="javascript: logout();">Logout</a>
+        <div class="user-info">
+            <p class="hello">Hello,</p>
+            <p class="name-nav" id="username">{{ appStorage.user_auth.full_name }}</p>
+            <p class="name-nav" id="matricno">{{ appStorage.user_auth.login_name }}</p>
+        </div>
+        <hr>
+        <a class="bar-item w3-button" href="javascript: profile();">
+            <i class="fa fa-user"></i>&nbsp; 
+            Profile
+        </a>
+        <a class="bar-item w3-button" href="javascript: curriculum();">
+            <i class="fa fa-lightbulb"></i>&nbsp; 
+            Curriculum
+        </a>
+        <a class="bar-item w3-button dropdown dropbtn" onclick="dropFunction()">
+            <i class="fa fa-book"></i>&nbsp;
+            Courses
+            <div id="myDropdown" class="dropdown-content">
+                <a href="javascript: course();"><i class="fa fa-angle-right"></i>&nbsp;Registered Course</a>
+                <a href="javascript: active_course();"><i class="fa fa-angle-right"></i>&nbsp;Active Courses</a>
+            </div>
+        </a>
+        <a class="bar-item w3-button" href="javascript: timetable();">
+            <i class="fa fa-calendar"></i>&nbsp;
+            Timetable
+        </a>
+        <a class="bar-item w3-button" href="javascript: lecturer();">
+            <i class="fa fa-users"></i>&nbsp;
+            Lecturers
+        </a>
+        <a class="bar-item w3-button" href="javascript: student();">
+            <i class="fa fa-graduation-cap"></i>&nbsp;
+            Students
+        </a>
+        <a class="bar-item w3-button" href="javascript: venue();">
+            <i class="fa fa-compass"></i>&nbsp;
+            Venues
+        </a>
+        <a class="bar-item w3-button" href="javascript: announcement();">
+            <i class="fa fa-envelope"></i>&nbsp; 
+            About
+        </a>
+        <hr>
+        <a class="bar-item w3-button" href="javascript: logout();">
+            <i class="fas fa-sign-out-alt"></i>&nbsp;
+            Logout
+        </a>
     </nav>
 
-    <header class="w3-bar w3-card w3-theme w3-blue">
-        <button class="w3-bar-item w3-button w3-xxxlarge w3-hover-theme" onclick="openSidebar()">&#9776;</button>
-        <h1 class="w3-bar-item">TTMS FC</h1>
+    <header class="w3-bar w3-card blue">
+        <button class="w3-bar-item w3-button w3-xlarge w3-hover-theme" onclick="openSidebar()">&#9776;</button>
+        <h1 class="bar-item"></h1>
     </header>
 
     <div class="w3-container" id="main-container">
     </div>
 
-    <footer class="w3-container w3-theme w3-margin-top w3-blue w3-center">
-        <h5>Copyright 2024, Faculty of Computing, UTM</h5>
+    <footer class="w3-container w3-margin-top blue w3-center">
+        <p class="copyright">Copyright 2024, Faculty of Computing, UTM</p>
     </footer>
 </body>
 
@@ -44,18 +90,41 @@
     checkSession();
 
     closeSidebar();
+
+    var appStorage = JSON.parse(sessionStorage.getItem("web_fc_utm_my_ttms"));
+    $("p#username").text(appStorage.user_auth.full_name);
+    $("p#matricno").text(appStorage.user_auth.login_name);
     
     function openSidebar() {
         document.getElementById("mySidebar").style.display = "block";
+        document.getElementById("overlay").style.display = "block";
     }
 
     function closeSidebar() {
         document.getElementById("mySidebar").style.display = "none";
+        document.getElementById("overlay").style.display = "none";
     }
 
     console.log(sessionStorage.getItem("web_fc_utm_my_ttms"));
 
+    // hiding and showing the dropdown content
+    function dropFunction() {
+    document.getElementById("myDropdown").classList.toggle("show");
+    }
 
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+        }
+        }
+    }
+    }
 
     // only reach here after pass both the checkSession() and 
     // checkTimeOut() functions
@@ -71,27 +140,50 @@
     // All load page functions below require CORS disabled.
     // Press Win + r keys and run the followings:
     // chrome.exe --user-data-dir="C:/Chrome dev session" --disable-web-security
+    function announcement() {
+        closeSidebar();
+        console.log('Load announcement page');
+        $('#main-container').load('announcement.html');
+    }
+    
     function profile() {
         closeSidebar();
         console.log('Load profile page');
         $('#main-container').load('profile.html');
     }
 
+    function curriculum() {
+        closeSidebar();
+        console.log('Load curriculum page');
+        $('#main-container').load('curriculum.html');
+    }
+
     function course() {
-            closeSidebar();
+        closeSidebar();
+        if(appStorage.user_auth.description == "Pensyarah") {
+            console.log('Load course lecturer page');
+            $('#main-container').load('course_lecturer.html');
+        } else {
             console.log('Load course page');
             $('#main-container').load('course.html');
-            if (selectedCourse) {
-                $('#main-container').load('class_location.html');
-            } else {
-                $('#main-container').load('course.html');
-            }
-        }
+        }      
+    }
+
+    function active_course() {
+        closeSidebar();
+        console.log('Load active course page');
+        $('#main-container').load('active_courses.html');           
+    }
 
     function timetable() {
         closeSidebar();
-        console.log('Load timetable page');
-        $('#main-container').load('timetable.html');
+        if(appStorage.user_auth.description == "Pensyarah") {
+            console.log('Load timetable lecturer page');
+            $('#main-container').load('timetable_lecturer.html');
+        } else {
+            console.log('Load student timetable page');
+            $('#main-container').load('timetable_student.html');
+        }      
     }
 
     function lecturer() {
@@ -108,7 +200,12 @@
 
     function venue() {
         closeSidebar();
-        console.log('Load venue page');
-        $('#main-container').load('venue.html');
+        if(appStorage.user_auth.description == "Pensyarah") {
+            console.log('Load venue lecturer page');
+            $('#main-container').load('venue_lecturer.html');
+        } else {
+            console.log('Load venue page');
+            $('#main-container').load('venue.html');
+        }
     }
 </script>

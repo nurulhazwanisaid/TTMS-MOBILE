@@ -1,0 +1,42 @@
+.card {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    width: 345px;
+    margin-bottom: 20px;
+    padding-bottom: 5px;
+    border-radius: 5px;
+
+}
+.card-header {
+    margin-top: 10px;
+    background-color: #87CEEB;
+    padding: 12px;
+    border-radius: 5px 5px 0 0;
+}
+
+h4 {
+    text-align: center;
+    color: #1f1d1d;
+    font-weight: bold;
+}
+
+.container {
+    padding: 2px 16px;
+}
+
+.hover-pointer {
+    cursor: pointer;
+}
+.back-button {
+    margin-bottom: 15px;
+}
+.timetable {
+    padding: 16px;
+    border-color: none;
+    border-collapse: collapse;
+}
+
+td {
+    padding: 20px;
+ 
+}

@@ -11,17 +11,18 @@
 
 </head>
 <body style="max-width:600px">
+    <br>
     <div id="app">
-        <div v-for="(courses, key) in groupedCourses" :key="key" class="mt-4">
+        <div v-for="(courses, key) in groupedCourses" :key="key">
             <h3>{{ key }}</h3>
             <table class="table table-striped">
                 <thead>
                     <tr>
-                
+              
                         <th>Subject Code</th>
                         <th>Subject Name</th>
                         <th>Section</th>
-                        <th>Status</th>
+                        <th>Total Students</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -30,11 +31,11 @@
                         <td>{{ course.kod_subjek }}</td>
                         <td>{{ course.nama_subjek }}</td>
                         <td>{{ course.seksyen }}</td>
-                        <td>{{ course.status }}</td>
+                        <td>{{ course.bil_pelajar }}</td>
                 </tbody>
             </table>
             <br>
-        </div>    
+        </div>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -51,7 +52,7 @@
 
         if (appStorage.data.user_courses == null) {
             console.log('Get courses from service');
-            var entity = { 'entity': 'pelajar_subjek', 'no_matrik': appStorage.user_auth.login_name };
+            var entity = { 'entity': 'pensyarah_subjek', 'no_pekerja': '13914' };
 
             var entityGetData = new URLSearchParams(entity).toString();
 

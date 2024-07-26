@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FC Timetable</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="timetable.css">
+</head>
+<body style="max-width: 600px; margin: auto;">
+
+    <div id="app">
+        <h3>Your Timetable</h3>
+        <div class="card" v-for="day in days" :key="day">
+            <div class="card-header">
+                <h4><b>{{ getDayName(day) }}</b></h4>
+            </div>
+            <table class="timetable">
+                <tr v-for="classTime in filterClassTimes(day)" :key="classTime.kod_subjek + '-' + classTime.seksyen">
+                    <td>{{ convertTime(classTime.masa) }}</td>
+                    <td>{{ classTime.kod_subjek }}-{{ classTime.seksyen }} <br> {{ classTime.nama_subjek}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="TTMS_Lib.js"></script>
+<script>
+
+    checkSession();
+
+    var appStorage = JSON.parse(sessionStorage.getItem("web_fc_utm_my_ttms"));
+    var selectedStudent = JSON.parse(sessionStorage.getItem("selectedStudent"));
+
+    console.log(appStorage.user_auth);
+
+    var entity = { 
+        'entity': 'pelajar_subjek', 
+        'session_id': appStorage.user_auth.session_id_admin, 
+        'no_matrik': 'A23CS3017', 
+        'sesi': appStorage.session_semester.sesi, 
+        'semester': appStorage.session_semester.semester
+    };
+
+    var entityGetData = new URLSearchParams(entity).toString();
+
+    console.log(entityGetData);
+    $.ajax({
+        type: "GET",
+        url: ajaxURL,
+        data: entityGetData,
+        success: function (response, status, xhr) {
+            console.log("Raw response:", response);
+            try {
+                var subjects = JSON.parse(response);
+                appStorage.data.studentSubjects = 
+                subjects.filter(subject => subject.sesi === appStorage.session_semester.sesi 
+                                && subject.semester === appStorage.session_semester.semester);
+
+                var timetableRequests = appStorage.data.studentSubjects.map(subject => {
+                    var timetableEntity = {
+                        'entity': 'jadual_subjek',
+                        'session_id': appStorage.user_auth.session_id_admin,
+                        'sesi': appStorage.session_semester.sesi,
+                        'semester': appStorage.session_semester.semester,
+                        'kod_subjek': subject.kod_subjek,
+                        'seksyen': subject.seksyen
+                    };
+                    var timetableGetData = new URLSearchParams(timetableEntity).toString();
+                    return $.ajax({
+                        type: "GET",
+                        url: ajaxURL,
+                        data: timetableGetData,
+                        async: true
+                    });
+                });
+
+                $.when.apply($, timetableRequests).done(function(...responses) {
+                    responses.forEach((response, index) => {
+                        if (response[1] === "success") {
+                            appStorage.data.studentSubjects[index].timetable = JSON.parse(response[0]);
+                        } else {
+                            appStorage.data.studentSubjects[index].timetable = [];
+                        }
+                    });
+
+                    sessionStorage.setItem("web_fc_utm_my_ttms", JSON.stringify(appStorage));
+                    runVueApp();
+                });
+            } catch (e) {
+                console.error("Failed to parse JSON response:", response);
+                alert("Failed to load subjects. Please try again later.");
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("AJAX error: ", error);
+            alert("AJAX error: " + error);
+        },
+        async: true,
+    });
+
+        function runVueApp() {
+            const app = Vue.createApp({
+                data() {
+                    return {
+                        studentSubjects: appStorage.data.studentSubjects,
+                        days: [1, 2, 3, 4, 5],
+                        timeSlots: [2, 3, 4, 5, 6, 8, 9, 10, 11]
+                    };
+                },
+                methods: {
+                    filterClassTimes(day, time) {
+                        const classTimes = [];
+                        this.studentSubjects.forEach(subject => {
+                            const times = subject.timetable.filter(entry => entry.hari == day);
+                            times.forEach(entry => {
+                                classTimes.push({ kod_subjek: subject.kod_subjek, nama_subjek: subject.nama_subjek, seksyen: subject.seksyen, masa: entry.masa });
+                            });
+                        });
+                        return classTimes;
+                    },
+                    getDayName(day) {
+                        const days = {
+                            1: 'Sunday',
+                            2: 'Monday',
+                            3: 'Tuesday',
+                            4: 'Wednesday',
+                            5: 'Thursday'
+                        };
+                        return days[day] || '';
+                    },
+                    // convertDay(day) {
+                    //     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
+                    //     return days[day - 1] || '';
+                    // },
+                    convertTime(time) {
+                        const times = {
+                            2: '8:00 - 8:50',
+                            3: '9:00 - 9:50',
+                            4: '10:00 - 10:50',
+                            5: '11:00 - 11:50',
+                            6: '12:00 - 12:50',
+                            8: '2:00 - 2:50',
+                            9: '3:00 - 3:50',
+                            10: '4:00 - 4:50',
+                            11: '5:00 - 5:50'
+                        };
+                        return times[time] || '';
+                    }
+                }
+            });
+            app.mount('#app');
+        }
+    </script>
+
+</body>
+</html>

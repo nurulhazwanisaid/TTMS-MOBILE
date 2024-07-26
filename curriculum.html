@@ -1,1 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TTMS Mobile - Curriculum</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3pro.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-teal.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">      
+    <link rel="stylesheet" href="curriculum.css">
+</head>
+<body style="max-width:600px">
+    <br>
+    <div id="app">
+        <div class="custom-select">
+            <select v-model="selectedSession" @change="filterCurriculum">
+                <option value="">Select Session</option>
+                <option v-for="session in uniqueSessions" :key="session" :value="session">{{ session }}</option>
+            </select>
+        </div>
+        <div v-for="(curriculums, key) in filteredCurriculum" :key="key">
+            <h3>{{ key }}</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Curriculum Name</th>
+                        <th>Curriculum Code</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="curriculum in curriculums" :key="curriculum.kod_kurikulum" @click="getCurrDetail(curriculum)">
+                        <td>{{ curriculum.nama_kurikulum }}</td>
+                        <td>{{ curriculum.kod_kurikulum }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+        </div>
+    </div>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="TTMS_Lib.js"></script>
+    <script>
+        // logout and back to login page if session invalid or 
+        // session time out
+        checkSession();
+
+        var appStorage = JSON.parse(sessionStorage.getItem("web_fc_utm_my_ttms"));
+        console.log(appStorage.user_auth);
+        console.log(appStorage.data.curriculum);
+
+        
+        if (appStorage.data.curriculum == null) {
+            console.log('Get curriculum from service');
+            var entity_cohort = { 'entity': 'kurikulum' , 'cohort': '2017/2018'};
+
+            var entityGetData = new URLSearchParams(entity_cohort).toString();
+
+            console.log(entityGetData);
+            $.ajax({
+                type: "GET",
+                url: ajaxURL,
+                data: entityGetData,
+                success: function (response, status, xhr) {
+                    console.log(response);
+                    var curriculums = JSON.parse(response);
+                    appStorage.data.curriculum = curriculums;
+
+                    sessionStorage.setItem("web_fc_utm_my_ttms", JSON.stringify(appStorage));
+                    
+                    runVueApp();
+                },
+                error: function (xhr, status, error) {
+                    alert("AJAX error!");
+                },
+                async: true,
+            });
+
+        } else {
+            runVueApp();
+        }
+
+        function runVueApp() {
+            var app = Vue.createApp({
+                data() {
+                    return {
+                        curriculum: appStorage.data.curriculum,
+                        selectedSession: '',
+                        filteredCurriculum: {}
+                    }
+                },
+                computed: {
+                    uniqueSessions() {
+                        const sessions = this.curriculum.map(c => c.sesi_masuk);
+                        return [...new Set(sessions)];
+                    },
+                    groupedCurriculum() {
+                        return this.curriculum.reduce((groups, curriculum) => {
+                            const key = `Session ${curriculum.sesi_masuk}`;
+                            if (!groups[key]) {
+                                groups[key] = [];
+                            }
+                            groups[key].push(curriculum);
+                            return groups;
+                        }, {});
+                    }
+                },
+                methods: {
+                    filterCurriculum() {
+                        if (this.selectedSession) {
+                            this.filteredCurriculum = {
+                                [`Session ${this.selectedSession}`]: this.curriculum.filter(c => c.sesi_masuk === this.selectedSession)
+                            };
+                        } else {
+                            this.filteredCurriculum = this.groupedCurriculum;
+                        }
+                    },
+                    getCurrDetail(curriculum) {
+                        sessionStorage.setItem("selectedCurriculum", JSON.stringify(curriculum));
+                        window.location.href = "curriculum_detail.html";
+                    } 
+                },
+                mounted() {
+                    this.filteredCurriculum = this.groupedCurriculum;
+                }
+            });
+            app.mount('#app');
+        }
+    </script>
+</body>
+</html>

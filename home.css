@@ -1,0 +1,88 @@
+.sidebar {
+    height: 100%;
+    width: 300px;
+    background-color: #fff;
+    position: fixed !important;
+    z-index: 1;
+    overflow: auto;
+}
+
+.blue {
+    color: #fff !important;
+    background-color: #37566B !important;
+}
+
+.bar-block .bar-item {
+    width: 100%;
+    display: block;
+    padding: 8px 30px;
+    text-align: left;
+    border: none;
+    white-space: normal;
+    float: none;
+    outline: 0;
+  }
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.22);
+    z-index: 1;
+    display: none;
+}
+
+.user-info {
+    margin: 20px;
+}
+
+.hello {
+    color: #A48900;
+    margin: 0;
+}
+
+.name-nav {
+    color: #37566B;
+    font-size: 1.2rem;
+    padding: 0;
+    margin: 0;
+}
+
+.copyright {
+    font-size: 14px;
+}
+
+/* Dropdown course */
+.dropbtn {
+    border: none;
+    cursor: pointer;
+  }
+  
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 300px;
+    overflow: auto;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    padding-left: 40px;
+  }
+  
+  .dropdown-content a {
+    color: black;
+    padding-bottom: 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  .dropdown a:hover {background-color: #ddd;}
+  
+  .show {display: block;}

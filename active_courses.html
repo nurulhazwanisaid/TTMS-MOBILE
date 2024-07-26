@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FC Timetable</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .hover-pointer {
+            cursor: pointer;
+        }
+        .back-button {
+            margin-bottom: 15px;
+            background-color: #fff;
+        }
+        .timetable td, .timetable th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        .timetable th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: center;
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body style="max-width: 800px; margin: auto;">
+
+<!-- <div class="w3-container w3-blue">
+    <h2>FC Subject List</h2>
+</div> -->
+
+<div id="app">
+    <br>
+    <div v-if="selectedSubject === null">
+        <input class="w3-input w3-border" type="text" placeholder="Search by Subject Code" v-model="searchQuery" @input="filterSubjects">
+        <br>
+        <table class="w3-table w3-striped w3-bordered">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Subject Code</th>
+                    <th>Subject Name</th>
+                    <th>Sec</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(subject, index) in filteredSubjects" :key="index" @click="selectSubject(subject)" class="hover-pointer">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ subject.kod_subjek }}</td>
+                    <td>{{ subject.nama_subjek }}</td>
+                    <td>{{ subject.bil_seksyen }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div v-else>
+        <button class="w3-button back-button" @click="deselectSubject"><i class="fa fa-arrow-left"></i>&nbsp; Back</button>
+        <h3>Details for {{ selectedSubject.nama_subjek }} ({{ selectedSubject.kod_subjek }})</h3>
+        <ul class="w3-ul">
+            <li v-for="(section, index) in selectedSubject.seksyen_list" :key="index">
+                <b>Section {{ section.seksyen }}</b> (Total Students: {{ section.bil_pelajar }})
+                <br>Lecturer: {{ section.pensyarah }}
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://unpkg.com/vue@2"></script>
+<script>
+
+    const app = Vue.createApp({
+        data() {
+            return {
+                subjects: [],
+                selectedSubject: null,
+                searchQuery: ''
+            };
+        },
+        computed: {
+            filteredSubjects() {
+                return this.subjects.filter(subject =>
+                    subject.kod_subjek.startsWith('SE') || subject.kod_subjek.startsWith('U')
+                );
+            }
+        },
+        methods: {
+            fetchSubjects() {
+                $.ajax({
+                    url: "http://web.fc.utm.my/ttms/web_man_webservice_json.cgi?entity=subjek_seksyen&sesi=2023/2024&semester=2",
+                    type: "GET",
+                    success: (response) => {
+                        this.subjects = JSON.parse(response);
+                    },
+                    error: (error) => {
+                        console.error("Error fetching subjects:", error);
+                    }
+                });
+            },
+            filterSubjects() {
+                // Update the filteredSubjects computed property
+            },
+            selectSubject(subject) {
+                this.selectedSubject = subject;
+            },
+            deselectSubject() {
+                this.selectedSubject = null;
+            }
+        },
+        mounted() {
+            if (this.subjects.length === 0) {
+                this.fetchSubjects();
+            }
+        }
+    });
+    app.mount('#app');
+</script>
+
+</body>
+</html>
